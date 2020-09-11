@@ -9,3 +9,5 @@ STM32F407VGTX_FLASH.ld
 STM32F407VGTX_RAM.ld
 USB_HOST/
 op_phoenix_car.ioc
+STM32F103RBTX_FLASH.ld
+op_phoenix_glove.ioc

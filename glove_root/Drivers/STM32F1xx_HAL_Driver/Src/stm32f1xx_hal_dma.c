@@ -605,31 +605,31 @@ void HAL_DMA_IRQHandler(DMA_HandleTypeDef *hdma)
 	/* added gkao 9/25 */
 	extern uint32_t values[5];
 
-	if (values[0] > 2100) {
+	if (values[0] > 2400) {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
 	}
 
-	if (values[1] > 2100) {
+	if (values[1] > 2400) {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
 	}
 
-	if (values[2] > 2100) {
+	if (values[2] > 2400) {
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
 	}
 
-	if (values[3] > 2100) {
+	if (values[3] > 2400) {
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 	}
 
-	if (values[4] > 2100) {
+	if (values[4] > 2400) {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);

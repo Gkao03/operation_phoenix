@@ -9,5 +9,6 @@
 #define INC_GLOBAL_H_
 
 extern uint32_t values[5];
+extern char transmit[1];
 
 #endif /* INC_GLOBAL_H_ */

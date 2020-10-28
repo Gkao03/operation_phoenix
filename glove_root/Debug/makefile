@@ -46,8 +46,8 @@ op_phoenix_glove.bin \
 all: op_phoenix_glove.elf secondary-outputs
 
 # Tool invocations
-op_phoenix_glove.elf: $(OBJS) $(USER_OBJS) /Users/gkao/STM32CubeIDE/workspace_1.4.0/op_phoenix_glove/STM32F103RBTX_FLASH.ld
-	arm-none-eabi-gcc -o "op_phoenix_glove.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/Users/gkao/STM32CubeIDE/workspace_1.4.0/op_phoenix_glove/STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="op_phoenix_glove.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+op_phoenix_glove.elf: $(OBJS) $(USER_OBJS) /Users/praneethmedepalli/Desktop/Fall\ Semester\ 2020/Senior\ Design/codes/operation_phoenix/glove_root/STM32F103RBTX_FLASH.ld
+	arm-none-eabi-gcc -o "op_phoenix_glove.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/Users/praneethmedepalli/Desktop/Fall Semester 2020/Senior Design/codes/operation_phoenix/glove_root/STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="op_phoenix_glove.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -39,11 +39,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  17 .debug_line   0000106c  00000000  00000000  00031ffd  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_str    000c1bbd  00000000  00000000  00033069  2**0
+ 18 .debug_str    000c1bac  00000000  00000000  00033069  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .comment      0000007b  00000000  00000000  000f4c26  2**0
+ 19 .comment      0000007b  00000000  00000000  000f4c15  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000031c  00000000  00000000  000f4ca4  2**2
+ 20 .debug_frame  0000031c  00000000  00000000  000f4c90  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -1045,21 +1045,21 @@ namespace ECE477_17
  8000758:	f443 43c0 	orr.w	r3, r3, #24576	; 0x6000
  800075c:	f043 0360 	orr.w	r3, r3, #96	; 0x60
  8000760:	61d3      	str	r3, [r2, #28]
-			TIM1->CCR1	= 3000;
+			TIM1->CCR1	= 1500;
  8000762:	4b18      	ldr	r3, [pc, #96]	; (80007c4 <_ZN9ECE477_175Timer13TIM1_PWM_InitEv+0xc4>)
- 8000764:	f640 32b8 	movw	r2, #3000	; 0xbb8
+ 8000764:	f240 52dc 	movw	r2, #1500	; 0x5dc
  8000768:	635a      	str	r2, [r3, #52]	; 0x34
-			TIM1->CCR2 	= 3000;
+			TIM1->CCR2 	= 1500;
  800076a:	4b16      	ldr	r3, [pc, #88]	; (80007c4 <_ZN9ECE477_175Timer13TIM1_PWM_InitEv+0xc4>)
- 800076c:	f640 32b8 	movw	r2, #3000	; 0xbb8
+ 800076c:	f240 52dc 	movw	r2, #1500	; 0x5dc
  8000770:	639a      	str	r2, [r3, #56]	; 0x38
-			TIM1->CCR3	= 3000;
+			TIM1->CCR3	= 1500;
  8000772:	4b14      	ldr	r3, [pc, #80]	; (80007c4 <_ZN9ECE477_175Timer13TIM1_PWM_InitEv+0xc4>)
- 8000774:	f640 32b8 	movw	r2, #3000	; 0xbb8
+ 8000774:	f240 52dc 	movw	r2, #1500	; 0x5dc
  8000778:	63da      	str	r2, [r3, #60]	; 0x3c
-			TIM1->CCR4	= 3000;
+			TIM1->CCR4	= 1500;
  800077a:	4b12      	ldr	r3, [pc, #72]	; (80007c4 <_ZN9ECE477_175Timer13TIM1_PWM_InitEv+0xc4>)
- 800077c:	f640 32b8 	movw	r2, #3000	; 0xbb8
+ 800077c:	f240 52dc 	movw	r2, #1500	; 0x5dc
  8000780:	641a      	str	r2, [r3, #64]	; 0x40
 
 			//Duty Cycle for CCRX = ARR / CCRX

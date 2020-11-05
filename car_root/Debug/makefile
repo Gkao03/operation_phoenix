@@ -45,24 +45,24 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-ECE_477_SeniorDesignF4.elf \
+ECE477_SeniorDesign_RC_Car.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-ECE_477_SeniorDesignF4.list \
+ECE477_SeniorDesign_RC_Car.list \
 
 OBJCOPY_BIN += \
-ECE_477_SeniorDesignF4.bin \
+ECE477_SeniorDesign_RC_Car.bin \
 
 
 # All Target
-all: ECE_477_SeniorDesignF4.elf secondary-outputs
+all: ECE477_SeniorDesign_RC_Car.elf secondary-outputs
 
 # Tool invocations
-ECE_477_SeniorDesignF4.elf: $(OBJS) $(USER_OBJS) C:\Users\gorshborsh\STM32CubeIDE\workspace_1.4.0\ECE_477_SeniorDesignF4\STM32F407VGTX_FLASH.ld
-	arm-none-eabi-g++ -o "ECE_477_SeniorDesignF4.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\gorshborsh\STM32CubeIDE\workspace_1.4.0\ECE_477_SeniorDesignF4\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ECE_477_SeniorDesignF4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+ECE477_SeniorDesign_RC_Car.elf: $(OBJS) $(USER_OBJS) C:\Users\gorshborsh\STM32CubeIDE\workspace_1.4.0\ECE477_SeniorDesign_RC_Car\STM32F407VGTX_FLASH.ld
+	arm-none-eabi-g++ -o "ECE477_SeniorDesign_RC_Car.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\gorshborsh\STM32CubeIDE\workspace_1.4.0\ECE477_SeniorDesign_RC_Car\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ECE477_SeniorDesign_RC_Car.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -71,13 +71,13 @@ default.size.stdout: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-ECE_477_SeniorDesignF4.list: $(EXECUTABLES)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "ECE_477_SeniorDesignF4.list"
+ECE477_SeniorDesign_RC_Car.list: $(EXECUTABLES)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "ECE477_SeniorDesign_RC_Car.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-ECE_477_SeniorDesignF4.bin: $(EXECUTABLES)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "ECE_477_SeniorDesignF4.bin"
+ECE477_SeniorDesign_RC_Car.bin: $(EXECUTABLES)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "ECE477_SeniorDesign_RC_Car.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 

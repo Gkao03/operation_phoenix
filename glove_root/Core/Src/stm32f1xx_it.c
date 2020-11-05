@@ -54,6 +54,7 @@
 /* USER CODE BEGIN 0 */
 extern char transmit[1];
 extern uint32_t values[5];
+int fingers[5] = {0,0,0,0,0};
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -217,44 +218,53 @@ void DMA1_Channel1_IRQHandler(void)
   HAL_DMA_IRQHandler(&hdma_adc1);
   /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
 	if (values[0] > 2350) {
-		//transmit[0] = '1';
+		fingers[0] = 1;
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 	} else {
-		//transmit[0] = '0';
+		fingers[0] = 0;
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
 	}
 
 	if (values[1] > 2200) {
-		//transmit[1] = '1';
+		fingers[1] = 1;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);
 	} else {
-		//transmit[1] = '0';
+		fingers[1] = 0;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);
 	}
 
 	if (values[2] > 2300) {
-		//transmit[2] = '1';
+		fingers[2] = 1;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
 	} else {
-		//transmit[2] = '0';
+		fingers[2] = 0;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
 	}
 
 	if (values[3] > 2300) {
-		//transmit[3] = '1';
+		fingers[3] = 1;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
 	} else {
-		//transmit[3] = '0';
+		fingers[3] = 0;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 	}
 
 	if (values[4] > 2700) {
-		transmit[0] = '1';
+		fingers[4] = 1;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
 	} else {
-		transmit[0] = '0';
+		fingers[4] = 0;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
 	}
+
+	// Store finger values (0-31) into transmit character
+	transmit[0] = 65;
+	for (int j = 0; j < 5; j++)
+	{
+		transmit[0] += fingers[j] << (4 - j);
+	}
+	HAL_UART_Transmit(&huart3, transmit, 1,1000);
+
   /* USER CODE END DMA1_Channel1_IRQn 1 */
 }
 
@@ -282,7 +292,7 @@ void USART3_IRQHandler(void)
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */
-  HAL_UART_Transmit_DMA(&huart3, transmit, 1);
+  //HAL_UART_Transmit_DMA(&huart3, transmit, 1);
   /* USER CODE END USART3_IRQn 1 */
 }
 

@@ -103,6 +103,11 @@ namespace ECE477_17
 		// new values to the shift register
 		void ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback(void)
 		{
+			//FIRST - Do not update the shift register state if the latch value has not changed since this function was last called
+			//Need to store value of previousLatchValue - make it static
+			static uint8_t previousLatchValue = 0;
+			if(previousLatchValue == this->updatedLatchValueToTransmit) return;
+
 			//Set LATCH low
 			SHIFT_REGISTER_GPIO->ODR &= ~SHIFT_REGISTER_LATCH;
 
@@ -141,6 +146,8 @@ namespace ECE477_17
 			//Set LATCH high
 			SHIFT_REGISTER_GPIO->ODR |= SHIFT_REGISTER_LATCH;
 
+			//Update previous latch value
+			previousLatchValue = this->updatedLatchValueToTransmit;
 		}
 
 		void LatchTransmitStart(void)

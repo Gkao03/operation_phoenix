@@ -3,8 +3,6 @@
 
 #include <stm32f4xx.h>
 #include <stm32f407xx.h>
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_uart.h"
 
 #define BufferSize 32
 uint8_t USART1_Buffer_Rx[BufferSize];

@@ -58,27 +58,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
-#define B1_EXTI_IRQn EXTI15_10_IRQn
-#define USART_RX_Pin GPIO_PIN_3
-#define USART_RX_GPIO_Port GPIOA
-#define finger5_Pin GPIO_PIN_6
-#define finger5_GPIO_Port GPIOC
-#define finger4_Pin GPIO_PIN_7
-#define finger4_GPIO_Port GPIOC
-#define finger3_Pin GPIO_PIN_8
-#define finger3_GPIO_Port GPIOC
-#define finger2_Pin GPIO_PIN_9
-#define finger2_GPIO_Port GPIOC
-#define finger1_Pin GPIO_PIN_8
-#define finger1_GPIO_Port GPIOA
-#define TMS_Pin GPIO_PIN_13
-#define TMS_GPIO_Port GPIOA
-#define TCK_Pin GPIO_PIN_14
-#define TCK_GPIO_Port GPIOA
-#define SWO_Pin GPIO_PIN_3
-#define SWO_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

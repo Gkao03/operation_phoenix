@@ -7,7 +7,7 @@ MotorControl.hpp:176:8:void ECE477_17::RobotMovementController::SetCurrentMoveme
 MotorControl.hpp:268:8:void ECE477_17::RobotMovementController::UpdateMotorEnableDirectionInLatchValueToTransmit(ECE477_17::MOTOR_ID, ECE477_17::MOTOR_DIRECTION)	16	static
 USART.hpp:20:7:void receive(uint8_t*, uint32_t*)	16	static
 USART.hpp:40:7:void USART1_IRQHandler()	16	static
-USART.hpp:69:8:void ECE477_17::USART::USART_Init()	8	static
+USART.hpp:83:8:void ECE477_17::USART::USART_Init()	8	static
 Timer.hpp:13:7:void TIM3_IRQHandler()	4	static
 Timer.hpp:73:8:void ECE477_17::Timer::GPIOA_ShiftRegisterPins_Init()	4	static
 Timer.hpp:91:8:void ECE477_17::Timer::TIM1_PWM_Init()	4	static

@@ -39,24 +39,38 @@ extern "C"
 	//Note: Double check this function name - looks good
 	void USART1_IRQHandler(void)
 	{
-		static char prevCommand = 'i';
+		static char prevCommand = 'A';
 
 		receive(USART1_Buffer_Rx, &Rx1_Counter);
 
 		char command = (char) USART1_Buffer_Rx[Rx1_Counter-1];
 
-		if(command != prevCommand && command == 'g')
-		{
-			prevCommand = command;
-			movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-		}
-		if(command != prevCommand && command == 'i')
+
+		if(command != prevCommand && command == 'A') // Idle
 		{
 			prevCommand = command;
 			movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
 			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 		}
+		else if(command != prevCommand && command == 'B') // Forward (Finger 1)
+		{
+			prevCommand = command;
+			movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
+			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+		}
+		else if(command != prevCommand && command == 'C') // Tank-turn left (Finger 2)
+		{
+			prevCommand = command;
+			movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
+			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+		}
+		else if(command != prevCommand && command == 'E')  // Tank-turn right (Finger 3)
+		{
+			prevCommand = command;
+			movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
+			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+		}
+
 	}
 }
 

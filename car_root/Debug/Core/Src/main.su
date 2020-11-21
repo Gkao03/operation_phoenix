@@ -17,7 +17,7 @@ Timer.hpp:128:8:void ECE477_17::Timer::TIM1_ChangePWM(int, float)	24	static
 Timer.hpp:155:8:void ECE477_17::Timer::TIM3_Init()	4	static
 Timer.hpp:173:8:void ECE477_17::Timer::TIM3_Start()	4	static
 Timer.hpp:174:8:void ECE477_17::Timer::TIM3_Stop()	4	static
-main.cpp:12:5:int main()	16	static
-main.cpp:57:1:void __static_initialization_and_destruction_0(int, int)	16	static
-main.cpp:57:1:cpp)	8	static
-main.cpp:57:1:cpp)	8	static
+main.cpp:12:5:int main()	8	static
+main.cpp:62:1:void __static_initialization_and_destruction_0(int, int)	16	static
+main.cpp:62:1:cpp)	8	static
+main.cpp:62:1:cpp)	8	static

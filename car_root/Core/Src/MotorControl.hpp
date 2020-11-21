@@ -345,7 +345,7 @@ namespace ECE477_17
 				}
 				else if(direction == FORWARD)
 				{
-					this->updatedLatchValueToTransmit &=  ~MOTOR_BL_A;
+					this->updatedLatchValueToTransmit &= ~MOTOR_BL_A;
 					this->updatedLatchValueToTransmit |=  MOTOR_BL_B;
 				}
 				else if(direction == REVERSE)

@@ -49,9 +49,14 @@ int main(void)
 
 	while(true)
 	{
+		/*
 		for(int i = 0;i < 100000;i++);
 		movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
 		movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+		for(int i = 0;i < 100000;i++);
+		movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
+		movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+		*/
 	}
 
 }

@@ -23,8 +23,6 @@ int main(void)
 	// Alternate Function 7 = USART 1
 	GPIOB->AFR[0] |= 0x77 << (4*6); // Set pin 6 and 7 to AF7 - CHECK THIS
 
-
-
 	// GPIO Speed: 00 = Low Speed, 01 = Medium Speed, 10 = Fast Speed, 11 = Reserved
 	GPIOB->OSPEEDR |= 0xF << (2*6);
 
@@ -37,13 +35,10 @@ int main(void)
 
 	// USART
 	USART_Init();
-
-
-
+	//Initialize other GPIO for shift register and PWM
 	GPIOA_ShiftRegisterPins_Init();
 	TIM1_PWM_Init();
 	TIM3_Init();
-	//TIM3_Start();
 
 	GPIOD->ODR |= _BS(13); //Turn on orange LED
 
@@ -52,6 +47,11 @@ int main(void)
 	movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 	//Main Program Loop
 
-	while(true);
+	while(true)
+	{
+		for(int i = 0;i < 100000;i++);
+		movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
+		movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+	}
 
 }

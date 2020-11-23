@@ -5,10 +5,16 @@
 #include <stm32f407xx.h>
 #include "Timer.hpp"
 
+//USART RX Buffer and control variables
 #define BufferSize 32
 uint8_t USART1_Buffer_Rx[BufferSize];
 uint32_t Rx1_Counter = 0;
 int test = 0;
+
+//Command 'Shift Register'
+#define COMMAND_QUEUE_SIZE 3
+//IDLE by default
+uint8_t commands_previously_received[COMMAND_QUEUE_SIZE] = {'I', 'I', 'I'};
 
 using namespace ECE477_17;
 
@@ -33,57 +39,91 @@ extern "C"
 	}
 }
 
+//Helper function. Shift elements of previously received commands
+void ShiftInNewCommandToCommandShiftRegister(uint8_t command)
+{
+	for(int i = 0;i < COMMAND_QUEUE_SIZE-1;i++)
+	{
+		commands_previously_received[i] = commands_previously_received[i+1];
+	}
+
+	commands_previously_received[COMMAND_QUEUE_SIZE-1] = command;
+}
+
+int CommandsPreviouslyReceivedAreEqual(void)
+{
+	//Grab oldest command. Compare to all until the latest
+	uint8_t commandToCompare = commands_previously_received[0];
+
+	for(int i = 1;i < COMMAND_QUEUE_SIZE;i++)
+	{
+		//Check to see if there are any differences
+		//If there are, return 0
+		if(commandToCompare != commands_previously_received[i]) return 0;
+	}
+
+	//Fall through case is that all commands are equal
+	return 1;
+}
+
 extern "C"
 {
 	//Note: Double check this function name - looks good
 	void USART1_IRQHandler(void)
 	{
-		static char prevCommand = 'I';
+		//Last command received - at startup this will be IDLE
+		//Further invocations of this function will be whatever the most recent command was form the previous call
+		static char prevCommand = commands_previously_received[3];
 
+		//Grab data from RX buffer
 		receive(USART1_Buffer_Rx, &Rx1_Counter);
 
+		//Archive the command
 		char command = (char) USART1_Buffer_Rx[Rx1_Counter-1];
 
+		//Use helper function to shift in most recent command to shift register
+		ShiftInNewCommandToCommandShiftRegister(command);
+
+		//Decide if most recent three commands are the same
+		if(CommandsPreviouslyReceivedAreEqual() == 0) return;
+
 		//Parse 'command'
-		if(command != prevCommand && command == 'B')
+		if(command == 'B')
 		{
 			movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
 			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 		}
-		else if(command != prevCommand && command == 'A')
+		else if(command == 'A')
 		{
 			movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
 			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 		}
-		else if(command != prevCommand && command == 'C')
+		else if(command == 'C')
 		{
 			movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
 			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 		}
 		//Rotation commands
-		else if(command != prevCommand && command == 'I')
+		else if(command == 'I')
 		{
 			movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
 			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 		}
-		else if(command != prevCommand && command == 'E')
+		else if(command == 'E')
 		{
 			movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
 			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 		}
 		//Set Half Speed
-		else if(command != prevCommand && command == 'Q')
+		else if(command == 'Q')
 		{
 			Timer::TIM1_ChangePWM(1250);
 		}
 		//Set high speed
-		else if(command != prevCommand && command == 'Y')
+		else if(command == 'Y')
 		{
 			Timer::TIM1_ChangePWM(2500);
 		}
-
-		//Update previous command
-		prevCommand = command;
 }
 }
 

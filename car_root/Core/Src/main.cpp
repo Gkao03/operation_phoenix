@@ -38,25 +38,28 @@ int main(void)
 	//Initialize other GPIO for shift register and PWM
 	GPIOA_ShiftRegisterPins_Init();
 	TIM1_PWM_Init();
-	TIM3_Init();
+	//TIM3_Init();
 
+	//LED go brrrt
 	GPIOD->ODR |= _BS(13); //Turn on orange LED
 
+	//Set latch pins to default state so we don't update them by accident during startup
 	movementController.SetLatchPinsToDefaultState();
+
+	//Wait before setting to IDLE to avoid any odd behavior with pins
+	for(int i = 0;i < 20000;i++);
+	//Default mode on powerup is IDLE.
 	movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
 	movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-	//Main Program Loop
 
 	while(true)
 	{
-		/*
-		for(int i = 0;i < 100000;i++);
-		movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
-		movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-		for(int i = 0;i < 100000;i++);
-		movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
-		movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-		*/
+		//for(int i = 0;i < 100000;i++);
+		//movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
+		//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+		//for(int i = 0;i < 1000000;i++);
+		//movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
+		//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 	}
 
 }

@@ -101,19 +101,19 @@ namespace ECE477_17
 			GPIOE->PUPDR	= 0;
 
 			//Setup TIM1
-			//Recall: System runs at 25MHz, and we want ~490   Hz???
-			TIM1->ARR = 3000-1;
-			TIM1->PSC = 17-1;
+			//Recall: System runs at 25MHz, and we want 8kHz???
+			TIM1->ARR = 2500-1;
+			TIM1->PSC = 200-1;
 			//TIM1->DIER |= _BS(0); //Enable UIE
 			//TIM1->EGR  |= _BS(0); //Generate update
 			TIM1->CCMR1 |= TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC2M_2 | TIM_CCMR1_OC2M_1; //Set PWM Mode
 			TIM1->CCMR2 |= TIM_CCMR2_OC3M_2 | TIM_CCMR2_OC3M_1 | TIM_CCMR2_OC4M_2 | TIM_CCMR2_OC4M_1;
-			TIM1->CCR1	= 3000;
-			TIM1->CCR2 	= 3000;
-			TIM1->CCR3	= 3000;
-			TIM1->CCR4	= 3000;
+			TIM1->CCR1	= 2500;
+			TIM1->CCR2 	= 2500;
+			TIM1->CCR3	= 2500;
+			TIM1->CCR4	= 2500;
 
-			//Duty Cycle for CCRX = ARR / CCRX
+			//Duty Cycle is CCRX / ARR
 			TIM1->CCER  |= TIM_CCER_CC1E | TIM_CCER_CC2E | TIM_CCER_CC3E | TIM_CCER_CC4E;
 			TIM1->BDTR  |= TIM_BDTR_MOE;
 
@@ -125,30 +125,16 @@ namespace ECE477_17
 		void TIM1_StopPWM(void) { TIM1->CR1 &= ~TIM_CR1_CEN; }
 
 		//Stop PWM, change CCR1, Start PWM
-		void TIM1_ChangePWM(int tim_channel, float dutyCycle)
+		void TIM1_ChangePWM(uint32_t newCCRx)
 		{
-			TIM1_StopPWM();
-
-			uint32_t newCCRX = dutyCycle * TIM1->ARR;
-
-			if(tim_channel == 1)
-			{
-				TIM1->CCR1 = newCCRX;
-			}
-			if(tim_channel == 2)
-			{
-				TIM1->CCR2 = newCCRX;
-			}
-			if(tim_channel == 3)
-			{
-				TIM1->CCR3 = newCCRX;
-			}
-			if(tim_channel == 4)
-			{
-				TIM1->CCR4 = newCCRX;
-			}
-
-			TIM1_StartPWM();
+			//TIM1_StopPWM();
+			//TIM1->CNT = 0;
+			//uint32_t newCCRX = dutyCycle * TIM1->ARR;
+			TIM1->CCR1 = newCCRx;
+			TIM1->CCR2 = newCCRx;
+			TIM1->CCR3 = newCCRx;
+			TIM1->CCR4 = newCCRx;
+			//TIM1_StartPWM();
 		}
 
 		//TIM3 - Interrupt generator for shift register control

@@ -3,6 +3,7 @@
 
 #include <stm32f4xx.h>
 #include <stm32f407xx.h>
+#include "Timer.hpp"
 
 #define BufferSize 32
 uint8_t USART1_Buffer_Rx[BufferSize];
@@ -37,25 +38,53 @@ extern "C"
 	//Note: Double check this function name - looks good
 	void USART1_IRQHandler(void)
 	{
-		static char prevCommand = 'i';
+		static char prevCommand = 'I';
 
 		receive(USART1_Buffer_Rx, &Rx1_Counter);
 
 		char command = (char) USART1_Buffer_Rx[Rx1_Counter-1];
 
-		if(command != prevCommand && command == 'g')
+		//Parse 'command'
+		if(command != prevCommand && command == 'B')
 		{
-			prevCommand = command;
 			movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
 			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 		}
-		if(command != prevCommand && command == 'i')
+		else if(command != prevCommand && command == 'A')
 		{
-			prevCommand = command;
 			movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
 			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 		}
-	}
+		else if(command != prevCommand && command == 'C')
+		{
+			movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
+			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+		}
+		//Rotation commands
+		else if(command != prevCommand && command == 'I')
+		{
+			movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
+			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+		}
+		else if(command != prevCommand && command == 'E')
+		{
+			movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
+			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+		}
+		//Set Half Speed
+		else if(command != prevCommand && command == 'Q')
+		{
+			Timer::TIM1_ChangePWM(1250);
+		}
+		//Set high speed
+		else if(command != prevCommand && command == 'Y')
+		{
+			Timer::TIM1_ChangePWM(2500);
+		}
+
+		//Update previous command
+		prevCommand = command;
+}
 }
 
 namespace ECE477_17

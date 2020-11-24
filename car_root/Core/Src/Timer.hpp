@@ -56,7 +56,7 @@ namespace ECE477_17
 			GPIOE->PUPDR	= 0;
 
 			//Setup TIM1
-			//Recall: System runs at 25MHz, and we want 8kHz???
+			//Recall: System runs at 25MHz, and we want 50 Hz
 			TIM1->ARR = 2500-1;
 			TIM1->PSC = 200-1;
 			//TIM1->DIER |= _BS(0); //Enable UIE
@@ -82,14 +82,10 @@ namespace ECE477_17
 		//Stop PWM, change CCR1, Start PWM
 		void TIM1_ChangePWM(uint32_t newCCRx)
 		{
-			//TIM1_StopPWM();
-			//TIM1->CNT = 0;
-			//uint32_t newCCRX = dutyCycle * TIM1->ARR;
 			TIM1->CCR1 = newCCRx;
 			TIM1->CCR2 = newCCRx;
 			TIM1->CCR3 = newCCRx;
 			TIM1->CCR4 = newCCRx;
-			//TIM1_StartPWM();
 		}
 
 		//TIM3 - Interrupt generator for shift register control
@@ -98,10 +94,10 @@ namespace ECE477_17
 			//Clock TIM3
 			RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
 			//Setup TIM3
-			//650 HZ update 200, 200
+			//650 HZ update 200, 200. 1khz for 125, 200
 			//For seeing on scope
-			TIM3->ARR 	= 500-1;
-			TIM3->PSC 	= 500-1;
+			TIM3->ARR 	= 125-1;
+			TIM3->PSC 	= 200-1;
 			TIM3->DIER	|= TIM_DIER_UIE;
 			TIM3->SR	= 0;
 			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

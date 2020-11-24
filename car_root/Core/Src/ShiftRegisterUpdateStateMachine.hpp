@@ -80,7 +80,7 @@ namespace ECE477_17
 					}
 
 					//LED go brrrt
-					GPIOD->ODR |= _BS(13); //Turn on orange LED
+					GPIOD->ODR ^= _BS(13); //Turn on orange LED
 
 					//Increment bit value
 					this->currentBitToSend++;
@@ -91,9 +91,6 @@ namespace ECE477_17
 
 				case CLK_SET:
 				{
-					//LED go brrrt
-					GPIOD->ODR &= ~_BS(13); //Turn on orange LED
-
 					//Set CLK high.
 					SHIFT_REGISTER_GPIO->ODR |= SHIFT_REGISTER_CLK;
 					//check currentBitToSend
@@ -113,6 +110,9 @@ namespace ECE477_17
 
 				case UNLATCH:
 				{
+					//LED go brrrt
+					GPIOD->ODR &= ~_BS(13); //Turn on orange LED
+
 					//Set LATCH high
 					SHIFT_REGISTER_GPIO->ODR |= SHIFT_REGISTER_LATCH;
 					//Go to standby next

@@ -269,6 +269,9 @@ namespace ECE477_17
 			UpdateMotorEnableDirectionInLatchValueToTransmit(BACK_RIGHT, this->backright_motor_dir);
 		}
 
+		//Public member variables and functions
+		uint8_t updatedLatchValueToTransmit;
+
 		//Private member variables and functions
 		private:
 
@@ -359,7 +362,6 @@ namespace ECE477_17
 		//Motor directions
 		MOTOR_DIRECTION frontleft_motor_dir, frontright_motor_dir, backleft_motor_dir, backright_motor_dir;
 		ROBOT_MOVEMENT_STATE current_movement_state;
-		uint8_t updatedLatchValueToTransmit;
 	};
 
 }

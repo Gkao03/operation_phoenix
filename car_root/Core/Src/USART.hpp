@@ -4,21 +4,19 @@
 #include <stm32f4xx.h>
 #include <stm32f407xx.h>
 #include "Timer.hpp"
-
-//USART RX Buffer and control variables
-#define BufferSize 32
-uint8_t USART1_Buffer_Rx[BufferSize];
-uint32_t Rx1_Counter = 0;
-int test = 0;
-
-//Command 'Shift Register'
-#define COMMAND_QUEUE_SIZE 3
-//IDLE by default
-uint8_t commands_previously_received[COMMAND_QUEUE_SIZE] = {'I', 'I', 'I'};
+#include "ShiftRegisterUpdateStateMachine.hpp"
 
 using namespace ECE477_17;
 
 extern RobotMovementController movementController;
+extern ShiftRegisterUpdateStateMachine shiftRegisterStateMachine;
+
+//USART RX Buffer and control variables
+const uint32_t BufferSize = 32;
+uint8_t USART1_Buffer_Rx[BufferSize];
+uint32_t Rx1_Counter = 0;
+
+
 
 extern "C"
 {
@@ -27,39 +25,39 @@ extern "C"
 		// Check RXNE event
 		if (USART1->SR & USART_SR_RXNE)
 		{
-			test = 1;
 			buffer[*pCounter] = USART1->DR; // Reading DR clears RXNE flag
 			(*pCounter)++; // Dereference and update memory value
+
 			if ((*pCounter) >= BufferSize) // Check buffer overflow
 			{
-				(*pCounter) = 0; // Circular buffer
+				(*pCounter) = 0; // Circular buffer - reset to 0
 			}
-
 		}
 	}
 }
 
 //Helper function. Shift elements of previously received commands
+/*
 void ShiftInNewCommandToCommandShiftRegister(uint8_t command)
 {
 	for(int i = 0;i < COMMAND_QUEUE_SIZE-1;i++)
 	{
 		commands_previously_received[i] = commands_previously_received[i+1];
 	}
-
+	//The last element must be handled separately
 	commands_previously_received[COMMAND_QUEUE_SIZE-1] = command;
 }
-
-int CommandsPreviouslyReceivedAreEqual(void)
+*/
+int CommandsPreviouslyReceivedAreEqual(uint8_t buffer[], uint32_t size)
 {
 	//Grab oldest command. Compare to all until the latest
-	uint8_t commandToCompare = commands_previously_received[0];
+	uint8_t commandToCompare = buffer[0];
 
-	for(int i = 1;i < COMMAND_QUEUE_SIZE;i++)
+	for(uint32_t i = 1;i < size;i++)
 	{
 		//Check to see if there are any differences
 		//If there are, return 0
-		if(commandToCompare != commands_previously_received[i]) return 0;
+		if(commandToCompare != buffer[i]) return 1; //CHANGE to 0!
 	}
 
 	//Fall through case is that all commands are equal
@@ -71,9 +69,9 @@ extern "C"
 	//Note: Double check this function name - looks good
 	void USART1_IRQHandler(void)
 	{
-		//Last command received - at startup this will be IDLE
-		//Further invocations of this function will be whatever the most recent command was form the previous call
-		static char prevCommand = commands_previously_received[3];
+		//Magic Hack. Make the initial previous command something that we don't use. The XBEE will be sending an IDLE command to the
+		//RC car on startup. This will trigger a movment state update and set the robot movement to IDLE
+		static char previousCommand = 'Z';
 
 		//Grab data from RX buffer
 		receive(USART1_Buffer_Rx, &Rx1_Counter);
@@ -81,50 +79,56 @@ extern "C"
 		//Archive the command
 		char command = (char) USART1_Buffer_Rx[Rx1_Counter-1];
 
-		//Use helper function to shift in most recent command to shift register
-		ShiftInNewCommandToCommandShiftRegister(command);
-
-		//Decide if most recent three commands are the same
-		if(CommandsPreviouslyReceivedAreEqual() == 0) return;
-
-		//Parse 'command'
-		if(command == 'B')
+		//Only update if commands are different
+		if(previousCommand != command && shiftRegisterStateMachine.ReadyToUpdateShiftRegister())
 		{
-			movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+			//Parse 'command'
+			if(command == 'B')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
+				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+			}
+			else if(command == 'A')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
+				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+			}
+			else if(command == 'C')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
+				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+			}
+			//Rotation commands
+			else if(command == 'I')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
+				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+			}
+			else if(command == 'E')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
+				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+			}
+			//Set Half Speed
+			else if(command == 'Q')
+			{
+				Timer::TIM1_ChangePWM(1250);
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
+				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+			}
+			//Set high speed
+			else if(command == 'Y')
+			{
+				Timer::TIM1_ChangePWM(2500);
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
+				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+			}
+			//Begin a transmission when ready
+			shiftRegisterStateMachine.beginTransmit = true;
 		}
-		else if(command == 'A')
-		{
-			movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-		}
-		else if(command == 'C')
-		{
-			movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-		}
-		//Rotation commands
-		else if(command == 'I')
-		{
-			movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-		}
-		else if(command == 'E')
-		{
-			movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-		}
-		//Set Half Speed
-		else if(command == 'Q')
-		{
-			Timer::TIM1_ChangePWM(1250);
-		}
-		//Set high speed
-		else if(command == 'Y')
-		{
-			Timer::TIM1_ChangePWM(2500);
-		}
-}
+		//Update previousCommand only if we are ready to update the shift register
+		if(shiftRegisterStateMachine.ReadyToUpdateShiftRegister()) previousCommand = command;
+	}
 }
 
 namespace ECE477_17

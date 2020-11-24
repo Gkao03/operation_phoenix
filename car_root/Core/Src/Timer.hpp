@@ -7,59 +7,14 @@
 #define _BS(x) (1 << x)
 
 extern ECE477_17::RobotMovementController movementController;
+extern ECE477_17::ShiftRegisterUpdateStateMachine shiftRegisterStateMachine;
 
 extern "C"
 {
 	void TIM3_IRQHandler(void)
 	{
-		/*
-		//Constants
-		const uint8_t CLK_RISE = 1;
-		const uint8_t CLK_FALL = 0;
-		//Keeps track of bit position of latch value to transmit
-		static uint8_t ithBitPositionOfLatchValueToTransmit = 0;
-		//Keeps track of whether we should set or reset CLK signal.
-		static uint8_t signalCLKRiseOrFall = CLK_RISE;
-		//Keeps track of whether we have just started a transmission
-		static uint8_t transmitting = 0;
-
-		//This checks whether we have just attempted to start a shift reg. transmission
-		//If we have, we need time for the latch transmission to start (wait for signals to go up)
-		if ( movementController.latchTriggerUpdateStatus == ECE477_17::LATCH_STATUS_TRIGGER_UPDATE && transmitting)
-		{
-			movementController.LatchTransmitStart();
-			//Set transmitting to 1
-			transmitting = 1;
-
-			//Zero out SR so we indicate we have finished the interrupt routine (else get stuck here.... forever!)
-			TIM3->SR = 0;
-			return;
-		}
-		//Update signalCLKRiseOrFall, take a particular action
-		//Set CLK to LOW
-		if( signalCLKRiseOrFall == CLK_RISE && movementController.latchTriggerUpdateStatus == ECE477_17::LATCH_STATUS_TRIGGER_UPDATE)
-		{
-			//Set CLK LOW so we can shift something in
-			ECE477_17::SHIFT_REGISTER_GPIO->ODR &= ~ECE477_17::SHIFT_REGISTER_CLK;
-
-			signalCLKRiseOrFall = CLK_FALL;
-		}
-		//Set CLK to HIGH
-		else if ( signalCLKRiseOrFall == CLK_FALL && movementController.latchTriggerUpdateStatus == ECE477_17::LATCH_STATUS_TRIGGER_UPDATE)
-		{
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback(ithBitPositionOfLatchValueToTransmit, transmitting);
-			//Set CLK HIGH
-			ECE477_17::SHIFT_REGISTER_GPIO->ODR |= ECE477_17::SHIFT_REGISTER_CLK;
-
-			signalCLKRiseOrFall = CLK_RISE;
-		}
-
-		//Turn on LED so we know this IRQ has been called
-		//Safe to remove. Just for debugging.
-		GPIOD->ODR ^= _BS(13); //Turn on orange LED
-		*/
-
-
+		//Update state machine as necessary
+		shiftRegisterStateMachine.UpdateState(movementController.updatedLatchValueToTransmit);
 
 		//Zero out SR so we indicate we have finished the interrupt routine (else get stuck here.... forever!)
 		TIM3->SR = 0;
@@ -142,8 +97,8 @@ namespace ECE477_17
 		{
 			//Clock TIM3
 			RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
-			//Setup TIM1
-			//42 HZ transmittion 2000-1, 2000-1
+			//Setup TIM3
+			//650 HZ update 200, 200
 			//For seeing on scope
 			TIM3->ARR 	= 500-1;
 			TIM3->PSC 	= 500-1;
@@ -151,8 +106,8 @@ namespace ECE477_17
 			TIM3->SR	= 0;
 			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			//Uncomment to enable IRQ
-			//NVIC->ISER[0] |= _BS(TIM3_IRQn);
-			//__enable_irq();
+			NVIC->ISER[0] |= _BS(TIM3_IRQn);
+			__enable_irq();
 			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		}
 		//Start + Stop routines

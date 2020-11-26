@@ -13,6 +13,7 @@ extern "C"
 {
 	void TIM3_IRQHandler(void)
 	{
+
 		//Update state machine as necessary
 		shiftRegisterStateMachine.UpdateState(movementController.updatedLatchValueToTransmit);
 
@@ -49,24 +50,37 @@ namespace ECE477_17
 			RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN;
 			RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
 
-			//Select TIM1 Channels for PE9,11,13,14
+			//Select TIM1 Channels for PE9 and NOT 11,13,14
 			GPIOE->AFR[1] 	= ( _BS(4) | _BS(12) | _BS(20) | _BS(24) ); //Choose AF's
 			GPIOE->MODER  	= ( _BS(19) | _BS(23) | _BS(27) | _BS(29) ); //Set to AF mode
 			GPIOE->OSPEEDR 	= ( _BS(19) | _BS(23) | _BS(27) | _BS(29) ); //Set to high speed
 			GPIOE->PUPDR	= 0;
 
 			//Setup TIM1
-			//Recall: System runs at 25MHz, and we want 50 Hz
-			TIM1->ARR = 2500-1;
-			TIM1->PSC = 200-1;
+			//Recall: System runs at 25MHz, and we want 5 kHz frequency
+			TIM1->ARR = 20-1;
+			TIM1->PSC = 250-1;
 			//TIM1->DIER |= _BS(0); //Enable UIE
 			//TIM1->EGR  |= _BS(0); //Generate update
 			TIM1->CCMR1 |= TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC2M_2 | TIM_CCMR1_OC2M_1; //Set PWM Mode
+
 			TIM1->CCMR2 |= TIM_CCMR2_OC3M_2 | TIM_CCMR2_OC3M_1 | TIM_CCMR2_OC4M_2 | TIM_CCMR2_OC4M_1;
-			TIM1->CCR1	= 2500;
-			TIM1->CCR2 	= 2500;
-			TIM1->CCR3	= 2500;
-			TIM1->CCR4	= 2500;
+
+			//To move forward, set CCR2 to 0 and CCR1 to < 20.
+			// To move in reverse, set CCR1 to 0 and CCR2 to < 20.
+			// DO NOT SET BOTH CCRs to non-zero values.
+			// NEED TO SELECT WHETHER Channels 1 and 2 correspond to left or right of vehicle
+			// Manually toggling these right now, need to make them automatically switch
+			TIM1->CCR1	= 19;
+			TIM1->CCR2 	= 0;
+
+			//To move forward, set CCR4 to 0 and CCR3 to < 20.
+			// To move in reverse, set CCR3 to 0 and CCR4 to < 20.
+			// DO NOT SET BOTH CCRs to non-zero values.
+			// Manually toggling these right now, need to make them automatically switch
+			// NEED TO SELECT WHETHER Channels 3 and 4 correspond to left or right of vehicle
+			TIM1->CCR3	= 19;
+			TIM1->CCR4	= 0;
 
 			//Duty Cycle is CCRX / ARR
 			TIM1->CCER  |= TIM_CCER_CC1E | TIM_CCER_CC2E | TIM_CCER_CC3E | TIM_CCER_CC4E;
@@ -74,7 +88,8 @@ namespace ECE477_17
 
 			TIM1->CR1  |= TIM_CR1_CEN; //Count enable
 		}
-		//Start PWM. This only need sto be called after StopPWM(...) Since CEN is on after TIM1_PWM_INIT()
+
+		//Start PWM. This only needs to be called after StopPWM(...) Since CEN is on after TIM1_PWM_INIT()
 		void TIM1_StartPWM(void) { TIM1->CR1 |= TIM_CR1_CEN; }
 		//Stop PWM.
 		void TIM1_StopPWM(void) { TIM1->CR1 &= ~TIM_CR1_CEN; }
@@ -94,10 +109,10 @@ namespace ECE477_17
 			//Clock TIM3
 			RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
 			//Setup TIM3
-			//650 HZ update 200, 200. 1khz for 125, 200
+			//650 HZ update 200, 200. 1khz for 125, 200. 1/3 Hz for ARR = 3000, PSC = 25000
 			//For seeing on scope
-			TIM3->ARR 	= 125-1;
-			TIM3->PSC 	= 200-1;
+			TIM3->ARR 	= 3000-1;
+			TIM3->PSC 	= 25000-1;
 			TIM3->DIER	|= TIM_DIER_UIE;
 			TIM3->SR	= 0;
 			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

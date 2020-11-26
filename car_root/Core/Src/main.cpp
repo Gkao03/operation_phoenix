@@ -1,4 +1,4 @@
-#include "main.h"
+//#include "main.h"
 #include "MotorControl.hpp"
 #include "ShiftRegisterUpdateStateMachine.hpp"
 #include "USART.hpp"
@@ -14,16 +14,19 @@ ShiftRegisterUpdateStateMachine shiftRegisterStateMachine;
 
 int main(void)
 {
-	// USART
-	USART_Init();
+	// USART - comment out for testing
+	//USART_Init();
+
 	//Initialize other GPIO for shift register and PWM
-	GPIOA_ShiftRegisterPins_Init();
+	//GPIOA_ShiftRegisterPins_Init();
+
 	TIM1_PWM_Init();
-	TIM3_Init();
-	TIM3_Start();
+	//TIM3_Init();
+	//TIM3_Start();
 
 	//Set latch pins to default state so we don't update them by accident during startup
-	movementController.SetLatchPinsToDefaultState();
+
+	/*movementController.SetLatchPinsToDefaultState();
 
 	//Wait before setting to IDLE to avoid any odd behavior with pins
 	for(int i = 0;i < 20000;i++);
@@ -34,7 +37,7 @@ int main(void)
 	if(shiftRegisterStateMachine.ReadyToUpdateShiftRegister()) shiftRegisterStateMachine.beginTransmit = true;
 	//Wait to finish
 	while(shiftRegisterStateMachine.IsCurrentlyUpdatingShiftRegister());
-
+	*/
 	while(true)
 	{
 	}

@@ -1,28 +1,25 @@
 core_cm4.h:1688:22:void __NVIC_EnableIRQ(IRQn_Type)	16	static
 MotorControl.hpp:78:3:ECE477_17::RobotMovementController::RobotMovementController()	16	static
 MotorControl.hpp:91:3:ECE477_17::RobotMovementController::~RobotMovementController()	16	static
-MotorControl.hpp:104:8:void ECE477_17::RobotMovementController::ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback()	40	static
-MotorControl.hpp:169:8:void ECE477_17::RobotMovementController::SetLatchPinsToDefaultState()	16	static
 MotorControl.hpp:183:8:void ECE477_17::RobotMovementController::SetCurrentMovementStateAndUpdateMotorDirection(ECE477_17::ROBOT_MOVEMENT_STATE)	16	static
 MotorControl.hpp:278:8:void ECE477_17::RobotMovementController::UpdateMotorEnableDirectionInLatchValueToTransmit(ECE477_17::MOTOR_ID, ECE477_17::MOTOR_DIRECTION)	16	static
 ShiftRegisterUpdateStateMachine.hpp:13:3:ECE477_17::ShiftRegisterUpdateStateMachine::ShiftRegisterUpdateStateMachine()	16	static
-ShiftRegisterUpdateStateMachine.hpp:20:8:bool ECE477_17::ShiftRegisterUpdateStateMachine::IsCurrentlyUpdatingShiftRegister() const	16	static
 ShiftRegisterUpdateStateMachine.hpp:25:8:bool ECE477_17::ShiftRegisterUpdateStateMachine::ReadyToUpdateShiftRegister() const	16	static
 ShiftRegisterUpdateStateMachine.hpp:31:8:void ECE477_17::ShiftRegisterUpdateStateMachine::UpdateState(uint8_t)	24	static
 Timer.hpp:14:7:void TIM3_IRQHandler()	8	static
-Timer.hpp:28:8:void ECE477_17::Timer::GPIOA_ShiftRegisterPins_Init()	4	static
-Timer.hpp:46:8:void ECE477_17::Timer::TIM1_PWM_Init()	4	static
-Timer.hpp:78:8:void ECE477_17::Timer::TIM1_StartPWM()	4	static
-Timer.hpp:80:8:void ECE477_17::Timer::TIM1_StopPWM()	4	static
-Timer.hpp:83:8:void ECE477_17::Timer::TIM1_ChangePWM(uint32_t)	16	static
-Timer.hpp:92:8:void ECE477_17::Timer::TIM3_Init()	4	static,ignoring_inline_asm
-Timer.hpp:110:8:void ECE477_17::Timer::TIM3_Start()	4	static
-Timer.hpp:111:8:void ECE477_17::Timer::TIM3_Stop()	4	static
+Timer.hpp:29:8:void ECE477_17::Timer::GPIOA_ShiftRegisterPins_Init()	4	static
+Timer.hpp:47:8:void ECE477_17::Timer::TIM1_PWM_Init()	4	static
+Timer.hpp:93:8:void ECE477_17::Timer::TIM1_StartPWM()	4	static
+Timer.hpp:95:8:void ECE477_17::Timer::TIM1_StopPWM()	4	static
+Timer.hpp:98:8:void ECE477_17::Timer::TIM1_ChangePWM(uint32_t)	16	static
+Timer.hpp:107:8:void ECE477_17::Timer::TIM3_Init()	4	static,ignoring_inline_asm
+Timer.hpp:125:8:void ECE477_17::Timer::TIM3_Start()	4	static
+Timer.hpp:126:8:void ECE477_17::Timer::TIM3_Stop()	4	static
 USART.hpp:23:7:void receive(uint8_t*, uint32_t*)	16	static
 USART.hpp:51:5:int CommandsPreviouslyReceivedAreEqual(uint8_t*, uint32_t)	24	static
 USART.hpp:70:7:void USART1_IRQHandler()	16	static
 USART.hpp:140:8:void ECE477_17::USART::USART_Init()	8	static
-main.cpp:15:5:int main()	16	static
-main.cpp:42:1:void __static_initialization_and_destruction_0(int, int)	16	static
-main.cpp:42:1:cpp)	8	static
-main.cpp:42:1:cpp)	8	static
+main.cpp:15:5:int main()	8	static
+main.cpp:45:1:void __static_initialization_and_destruction_0(int, int)	16	static
+main.cpp:45:1:cpp)	8	static
+main.cpp:45:1:cpp)	8	static

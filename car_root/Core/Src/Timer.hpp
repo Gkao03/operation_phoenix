@@ -7,16 +7,11 @@
 #define _BS(x) (1 << x)
 
 extern ECE477_17::RobotMovementController movementController;
-extern ECE477_17::ShiftRegisterUpdateStateMachine shiftRegisterStateMachine;
 
 extern "C"
 {
 	void TIM3_IRQHandler(void)
 	{
-
-		//Update state machine as necessary
-		shiftRegisterStateMachine.UpdateState(movementController.updatedLatchValueToTransmit);
-
 		//Zero out SR so we indicate we have finished the interrupt routine (else get stuck here.... forever!)
 		TIM3->SR = 0;
 	}

@@ -4,12 +4,10 @@
 #include <stm32f4xx.h>
 #include <stm32f407xx.h>
 #include "Timer.hpp"
-#include "ShiftRegisterUpdateStateMachine.hpp"
 
 using namespace ECE477_17;
 
 extern RobotMovementController movementController;
-extern ShiftRegisterUpdateStateMachine shiftRegisterStateMachine;
 
 //USART RX Buffer and control variables
 const uint32_t BufferSize = 32;
@@ -36,18 +34,6 @@ extern "C"
 	}
 }
 
-//Helper function. Shift elements of previously received commands
-/*
-void ShiftInNewCommandToCommandShiftRegister(uint8_t command)
-{
-	for(int i = 0;i < COMMAND_QUEUE_SIZE-1;i++)
-	{
-		commands_previously_received[i] = commands_previously_received[i+1];
-	}
-	//The last element must be handled separately
-	commands_previously_received[COMMAND_QUEUE_SIZE-1] = command;
-}
-*/
 int CommandsPreviouslyReceivedAreEqual(uint8_t buffer[], uint32_t size)
 {
 	//Grab oldest command. Compare to all until the latest
@@ -72,62 +58,51 @@ extern "C"
 		//Magic Hack. Make the initial previous command something that we don't use. The XBEE will be sending an IDLE command to the
 		//RC car on startup. This will trigger a movment state update and set the robot movement to IDLE
 		static char previousCommand = 'Z';
+		char command;
 
-		//Grab data from RX buffer
-		receive(USART1_Buffer_Rx, &Rx1_Counter);
-
-		//Archive the command
-		char command = (char) USART1_Buffer_Rx[Rx1_Counter-1];
+		if(USART1->SR & USART_SR_RXNE)
+		{
+			command = USART1->DR;
+		}
 
 		//Only update if commands are different
-		if(previousCommand != command && shiftRegisterStateMachine.ReadyToUpdateShiftRegister())
+		if(previousCommand != command)
 		{
 			//Parse 'command'
 			if(command == 'B')
 			{
 				movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
-				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 			}
 			else if(command == 'A')
 			{
 				movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
-				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 			}
 			else if(command == 'C')
 			{
 				movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
-				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 			}
 			//Rotation commands
 			else if(command == 'I')
 			{
 				movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
-				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 			}
 			else if(command == 'E')
 			{
 				movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
-				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 			}
 			//Set Half Speed
 			else if(command == 'Q')
 			{
-				Timer::TIM1_ChangePWM(40);
-				movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
-				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+				movementController.SetLowSpeed();
 			}
 			//Set high speed
 			else if(command == 'Y')
 			{
-				Timer::TIM1_ChangePWM(80);
-				movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
-				//movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+				movementController.SetHighSpeed();
 			}
-			//Begin a transmission when ready
-			shiftRegisterStateMachine.beginTransmit = true;
 		}
-		//Update previousCommand only if we are ready to update the shift register
-		if(shiftRegisterStateMachine.ReadyToUpdateShiftRegister()) previousCommand = command;
+		//Update previous command
+		previousCommand = command;
 	}
 }
 

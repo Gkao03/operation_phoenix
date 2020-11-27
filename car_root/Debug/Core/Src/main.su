@@ -18,7 +18,8 @@ USART.hpp:21:7:void receive(uint8_t*, uint32_t*)	16	static
 USART.hpp:37:5:int CommandsPreviouslyReceivedAreEqual(uint8_t*, uint32_t)	24	static
 USART.hpp:56:7:void USART1_IRQHandler()	16	static
 USART.hpp:115:8:void ECE477_17::USART::USART_Init()	8	static
-main.cpp:12:5:int main()	8	static
-main.cpp:31:1:void __static_initialization_and_destruction_0(int, int)	16	static
-main.cpp:31:1:cpp)	8	static
-main.cpp:31:1:cpp)	8	static
+main.cpp:13:6:void fools_wait(uint32_t)	24	static
+main.cpp:15:5:int main()	8	static
+main.cpp:45:1:void __static_initialization_and_destruction_0(int, int)	16	static
+main.cpp:45:1:cpp)	8	static
+main.cpp:45:1:cpp)	8	static

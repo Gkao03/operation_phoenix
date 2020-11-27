@@ -26,8 +26,8 @@ namespace ECE477_17
 	volatile uint32_t* const RIGHT_SIDE_MOTOR_EN_A 	= &(TIM1->CCR3);
 	volatile uint32_t* const RIGHT_SIDE_MOTOR_EN_B 	= &(TIM1->CCR4);
 
-	const uint32_t PWM_DUTY_CYCLE_FULL_SPEED = TIM1->ARR;
-	const uint32_t PWM_DUTY_CYCLE_LOW_SPEED  = (uint32_t)( (TIM1->ARR) * 0.75f);
+	const uint32_t PWM_DUTY_CYCLE_FULL_SPEED = 2500;
+	const uint32_t PWM_DUTY_CYCLE_LOW_SPEED  = 1500;
 
 	//Struct for controlling motors
 	struct RobotMovementController

@@ -20,6 +20,7 @@ int main(void)
 	//Start PWM Timer
 	TIM1_PWM_Init();
 
+	/*
 	//Set LOW motor speed
 	movementController.SetLowSpeed();
 	//Set motor movement scheme
@@ -39,7 +40,31 @@ int main(void)
 	movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
 	//Wait a little bit
 	fools_wait(2000000);
-
+	//Set motor movement scheme
+	movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
+	fools_wait(2000000);
+	//Set LOW motor speed
+	movementController.SetHighSpeed();
+	//Set motor movement scheme
+	//movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
+	//Wait a little bit
+	//fools_wait(2000000);
+	//Step through all motor movements
+	movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
+	//Wait a little bit
+	fools_wait(2000000);
+	movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
+	//Wait a little bit
+	fools_wait(2000000);
+	movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
+	//Wait a little bit
+	fools_wait(2000000);
+	movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
+	//Wait a little bit
+	fools_wait(2000000);
+	//Set motor movement scheme
+	movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
+	*/
 	//Infinite loop
 	while(true){}
 }

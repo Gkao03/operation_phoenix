@@ -26,8 +26,8 @@ namespace ECE477_17
 	volatile uint32_t* const RIGHT_SIDE_MOTOR_EN_A 	= &(TIM1->CCR3);
 	volatile uint32_t* const RIGHT_SIDE_MOTOR_EN_B 	= &(TIM1->CCR4);
 
-	const uint32_t PWM_DUTY_CYCLE_FULL_SPEED = 2500;
-	const uint32_t PWM_DUTY_CYCLE_LOW_SPEED  = 1500;
+	const uint32_t PWM_DUTY_CYCLE_FULL_SPEED = 20;
+	const uint32_t PWM_DUTY_CYCLE_LOW_SPEED  = 12;
 
 	//Struct for controlling motors
 	struct RobotMovementController
@@ -104,6 +104,13 @@ namespace ECE477_17
 		//Helper function to set
 		void UpdatePWMCCRxRegisterBasedOnDirection(MOTOR_DIRECTION dir, volatile uint32_t* const CCRxPtrA, volatile uint32_t* const CCRxPtrB )
 		{
+			//Set  both to 0, then wait
+			(*CCRxPtrA) = 0;
+			(*CCRxPtrB) = 0;
+
+			//Fools wait
+			for(int i = 0;i < 10000;i++);
+
 			if(dir == NONE)
 			{
 				(*CCRxPtrA) = 0;

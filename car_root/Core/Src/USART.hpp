@@ -14,8 +14,6 @@ const uint32_t BufferSize = 32;
 uint8_t USART1_Buffer_Rx[BufferSize];
 uint32_t Rx1_Counter = 0;
 
-
-
 extern "C"
 {
 	void receive(uint8_t *buffer, uint32_t *pCounter)
@@ -64,12 +62,13 @@ extern "C"
 		{
 			command = USART1->DR;
 		}
+		else return;
 
 		//Only update if commands are different
 		if(previousCommand != command)
 		{
 			//Parse 'command'
-			if(command == 'B')
+			if(command == 'C')
 			{
 				movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
 			}
@@ -77,7 +76,7 @@ extern "C"
 			{
 				movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
 			}
-			else if(command == 'C')
+			else if(command == 'B')
 			{
 				movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
 			}
@@ -96,7 +95,7 @@ extern "C"
 				movementController.SetLowSpeed();
 			}
 			//Set high speed
-			else if(command == 'Y')
+			else if(command == 'G')
 			{
 				movementController.SetHighSpeed();
 			}

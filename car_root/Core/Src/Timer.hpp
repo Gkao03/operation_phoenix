@@ -52,9 +52,9 @@ namespace ECE477_17
 			GPIOE->PUPDR	= 0;
 
 			//Setup TIM1
-			//Recall: System runs at 25MHz, and we want 5 kHz frequency
-			TIM1->ARR = 2500-1;
-			TIM1->PSC = 100-1;
+			//Recall: System runs at 25MHz, and we want 2.5 kHz frequency
+			TIM1->ARR = 20-1;
+			TIM1->PSC = 500-1;
 			//TIM1->DIER |= _BS(0); //Enable UIE
 			//TIM1->EGR  |= _BS(0); //Generate update
 			TIM1->CCMR1 |= TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC2M_2 | TIM_CCMR1_OC2M_1; //Set PWM Mode
@@ -66,7 +66,7 @@ namespace ECE477_17
 			// DO NOT SET BOTH CCRs to non-zero values.
 			// NEED TO SELECT WHETHER Channels 1 and 2 correspond to left or right of vehicle
 			// Manually toggling these right now, need to make them automatically switch
-			TIM1->CCR1	= 1250;
+			TIM1->CCR1	= 20;
 			TIM1->CCR2 	= 0;
 
 			//To move forward, set CCR4 to 0 and CCR3 to < 20.
@@ -74,7 +74,7 @@ namespace ECE477_17
 			// DO NOT SET BOTH CCRs to non-zero values.
 			// Manually toggling these right now, need to make them automatically switch
 			// NEED TO SELECT WHETHER Channels 3 and 4 correspond to left or right of vehicle
-			TIM1->CCR3	= 1250;
+			TIM1->CCR3	= 20;
 			TIM1->CCR4	= 0;
 
 			//Duty Cycle is CCRX / ARR

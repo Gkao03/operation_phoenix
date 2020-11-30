@@ -5,21 +5,20 @@ MotorControl.hpp:51:8:void ECE477_17::RobotMovementController::SetHighSpeed()	16
 MotorControl.hpp:52:8:void ECE477_17::RobotMovementController::SetLowSpeed()	16	static
 MotorControl.hpp:55:8:void ECE477_17::RobotMovementController::SetCurrentMovementStateAndUpdateMotorDirection(ECE477_17::ROBOT_MOVEMENT_STATE)	16	static
 MotorControl.hpp:105:8:void ECE477_17::RobotMovementController::UpdatePWMCCRxRegisterBasedOnDirection(ECE477_17::MOTOR_DIRECTION, volatile uint32_t*, volatile uint32_t*)	32	static
-Timer.hpp:13:7:void TIM3_IRQHandler()	4	static
-Timer.hpp:24:8:void ECE477_17::Timer::GPIOA_ShiftRegisterPins_Init()	4	static
-Timer.hpp:42:8:void ECE477_17::Timer::TIM1_PWM_Init()	4	static
-Timer.hpp:88:8:void ECE477_17::Timer::TIM1_StartPWM()	4	static
-Timer.hpp:90:8:void ECE477_17::Timer::TIM1_StopPWM()	4	static
-Timer.hpp:93:8:void ECE477_17::Timer::TIM1_ChangePWM(uint32_t)	16	static
-Timer.hpp:102:8:void ECE477_17::Timer::TIM3_Init()	4	static,ignoring_inline_asm
-Timer.hpp:120:8:void ECE477_17::Timer::TIM3_Start()	4	static
-Timer.hpp:121:8:void ECE477_17::Timer::TIM3_Stop()	4	static
-USART.hpp:19:7:void receive(uint8_t*, uint32_t*)	16	static
-USART.hpp:35:5:int CommandsPreviouslyReceivedAreEqual(uint8_t*, uint32_t)	24	static
-USART.hpp:54:7:void USART1_IRQHandler()	16	static
-USART.hpp:114:8:void ECE477_17::USART::USART_Init()	8	static
-main.cpp:13:6:void fools_wait(uint32_t)	24	static
-main.cpp:15:5:int main()	8	static
-main.cpp:70:1:void __static_initialization_and_destruction_0(int, int)	16	static
-main.cpp:70:1:cpp)	8	static
-main.cpp:70:1:cpp)	8	static
+Timer.hpp:18:7:void TIM3_IRQHandler()	8	static
+Timer.hpp:51:8:void ECE477_17::Timer::GPIOA_ShiftRegisterPins_Init()	4	static
+Timer.hpp:61:8:void ECE477_17::Timer::TIM1_PWM_Init()	4	static
+Timer.hpp:115:8:void ECE477_17::Timer::TIM1_StartPWM()	4	static
+Timer.hpp:117:8:void ECE477_17::Timer::TIM1_StopPWM()	4	static
+Timer.hpp:120:8:void ECE477_17::Timer::TIM1_ChangePWM(uint32_t)	16	static
+Timer.hpp:129:8:void ECE477_17::Timer::TIM3_Init()	4	static,ignoring_inline_asm
+Timer.hpp:149:8:void ECE477_17::Timer::TIM3_Start()	4	static
+Timer.hpp:150:8:void ECE477_17::Timer::TIM3_Stop()	4	static
+USART.hpp:14:5:int CommandsPreviouslyReceivedAreEqual(uint8_t*, uint32_t)	24	static
+USART.hpp:33:7:void USART1_IRQHandler()	32	static
+USART.hpp:150:8:void ECE477_17::USART::USART_Init()	8	static
+main.cpp:16:6:void fools_wait(uint32_t)	24	static
+main.cpp:18:5:int main()	8	static
+main.cpp:34:1:void __static_initialization_and_destruction_0(int, int)	16	static
+main.cpp:34:1:cpp)	8	static
+main.cpp:34:1:cpp)	8	static

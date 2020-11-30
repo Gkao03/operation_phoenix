@@ -7,13 +7,40 @@
 #define _BS(x) (1 << x)
 
 extern ECE477_17::RobotMovementController movementController;
+extern uint32_t tim3_counter_limit;
+//TIM3 wait enable
+bool doCount = false;
+
+using namespace ECE477_17;
 
 extern "C"
 {
 	void TIM3_IRQHandler(void)
 	{
+		static uint32_t internal_counter = 0;
+
 		//Zero out SR so we indicate we have finished the interrupt routine (else get stuck here.... forever!)
 		TIM3->SR = 0;
+
+		if(!doCount) return;
+
+		//Blink orange LED
+		GPIOD->ODR |= _BS(14);
+
+		if(internal_counter > tim3_counter_limit)
+		{
+			//Turn off orange LED
+			GPIOD->ODR &= ~_BS(14);
+			//Set movement state to idle
+			movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
+			//reset internal counter
+			internal_counter = 0;
+			//don't count anymore
+			doCount = false;
+		}
+
+		//Increment counter
+		internal_counter++;
 	}
 }
 
@@ -28,7 +55,12 @@ namespace ECE477_17
 			GPIOA->MODER 	|= ( _BS(2) | _BS(4) | _BS(6) | _BS(8) ); //Set output mode for GPIOA 1-4
 			GPIOA->OSPEEDR 	|= ( _BS(2) | _BS(3) | _BS(4) | _BS(5) | _BS(6) | _BS(7) | _BS(8) | _BS(9) );
 			GPIOA->ODR   	= 0; //Everything is 0 by default
+		}
 
+		//Initialize TIM1 and its 4 Channels
+		void TIM1_PWM_Init(void)
+		{
+			//Extra GPIO - flashy pins
 			//Enable GPIOD for blue LED
 			RCC->AHB1ENR 	|= RCC_AHB1ENR_GPIODEN;
 			GPIOD->MODER 	|= _BS(28) | _BS(26); //Set GPIOD 14,13 to output mode
@@ -36,11 +68,6 @@ namespace ECE477_17
 			GPIOD->ODR 		|= _BS(14);
 			GPIOD->PUPDR	= 0;
 			GPIOD->OSPEEDR  |= _BS(28) | _BS(26);
-		}
-
-		//Initialize TIM1 and its 4 Channels
-		void TIM1_PWM_Init(void)
-		{
 			//Enable Clock to TIM1, GPIOE (PWM GPIO pins)
 			RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN;
 			RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
@@ -66,7 +93,7 @@ namespace ECE477_17
 			// DO NOT SET BOTH CCRs to non-zero values.
 			// NEED TO SELECT WHETHER Channels 1 and 2 correspond to left or right of vehicle
 			// Manually toggling these right now, need to make them automatically switch
-			TIM1->CCR1	= 20;
+			TIM1->CCR1	= 0;
 			TIM1->CCR2 	= 0;
 
 			//To move forward, set CCR4 to 0 and CCR3 to < 20.
@@ -74,7 +101,7 @@ namespace ECE477_17
 			// DO NOT SET BOTH CCRs to non-zero values.
 			// Manually toggling these right now, need to make them automatically switch
 			// NEED TO SELECT WHETHER Channels 3 and 4 correspond to left or right of vehicle
-			TIM1->CCR3	= 20;
+			TIM1->CCR3	= 0;
 			TIM1->CCR4	= 0;
 
 			//Duty Cycle is CCRX / ARR
@@ -106,14 +133,16 @@ namespace ECE477_17
 			//Setup TIM3
 			//650 HZ update 200, 200. 1khz for 125, 200. 1/3 Hz for ARR = 3000, PSC = 25000
 			//For seeing on scope
-			TIM3->ARR 	= 3000-1;
-			TIM3->PSC 	= 25000-1;
+			TIM3->ARR 	= 2500-1;
+			TIM3->PSC 	= 100-1; //100 Hz
 			TIM3->DIER	|= TIM_DIER_UIE;
 			TIM3->SR	= 0;
 			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			//Uncomment to enable IRQ
 			NVIC->ISER[0] |= _BS(TIM3_IRQn);
 			__enable_irq();
+
+			TIM3->CR1 |= TIM_CR1_CEN;
 			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		}
 		//Start + Stop routines

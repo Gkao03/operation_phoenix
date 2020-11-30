@@ -8,29 +8,8 @@
 using namespace ECE477_17;
 
 extern RobotMovementController movementController;
+extern bool doCount; //TIM3 wait enable - if it is true, we should not update motor movement
 
-//USART RX Buffer and control variables
-const uint32_t BufferSize = 32;
-uint8_t USART1_Buffer_Rx[BufferSize];
-uint32_t Rx1_Counter = 0;
-
-extern "C"
-{
-	void receive(uint8_t *buffer, uint32_t *pCounter)
-	{
-		// Check RXNE event
-		if (USART1->SR & USART_SR_RXNE)
-		{
-			buffer[*pCounter] = USART1->DR; // Reading DR clears RXNE flag
-			(*pCounter)++; // Dereference and update memory value
-
-			if ((*pCounter) >= BufferSize) // Check buffer overflow
-			{
-				(*pCounter) = 0; // Circular buffer - reset to 0
-			}
-		}
-	}
-}
 
 int CommandsPreviouslyReceivedAreEqual(uint8_t buffer[], uint32_t size)
 {
@@ -55,16 +34,66 @@ extern "C"
 	{
 		//Magic Hack. Make the initial previous command something that we don't use. The XBEE will be sending an IDLE command to the
 		//RC car on startup. This will trigger a movment state update and set the robot movement to IDLE
-		static char previousCommand = 'Z';
+		static char previousCommand = 'I';
+		//Increment this variable everytime this function is called
+		static uint32_t usartIRQHandlerNumberOfCalls = 0;
+		//Command occurrence bin
+		static uint32_t commandOcurrenceBin[127] = {0};
+		static uint32_t commandOcurrenceBinNumberOfElements = 0;
+		const uint32_t  commandOcurrenceBinMaxNumberOfElementsBeforeReset = 10;
+		const uint32_t usartIRQHandlerCallModuloForAddingCommandToBin = 3;
+
+		//Received command
 		char command;
 
+		//Wait for doCount to become false, indicating that we are not currently executing a timed robot movement
+		if(doCount) return;
+
+		//Grab a command
 		if(USART1->SR & USART_SR_RXNE)
 		{
 			command = USART1->DR;
 		}
 		else return;
 
-		//Only update if commands are different
+		//Increment number of call counter
+		usartIRQHandlerNumberOfCalls++;
+
+		//Add element to bin every time "usartIRQHandlerNumberOfCalls % usartIRQHanderl....ModuloFroAddingCommandToBin == 0"
+		if(usartIRQHandlerNumberOfCalls % usartIRQHandlerCallModuloForAddingCommandToBin == 0)
+		{
+			//Increment commandOccurenceBinNumberOfElements
+			commandOcurrenceBinNumberOfElements++;
+			//Add to bin
+			commandOcurrenceBin[(uint32_t)command]++;
+		}
+
+		//Check if maximum number of elements in bin is achieved
+		//We are basically computing the mode
+		if(commandOcurrenceBinNumberOfElements >= commandOcurrenceBinMaxNumberOfElementsBeforeReset)
+		{
+			uint32_t mostFrequentlyOccuringCommandIdx	 = 65;
+			uint32_t mostFrequentlyOccuringCommandCount	 = 0;
+			//Choose the command that occurred most frequently
+			for(int i = 65; i <= 90;i++)
+			{
+				//Update most frequently occurring information
+				if(commandOcurrenceBin[i] > mostFrequentlyOccuringCommandCount)
+				{
+					mostFrequentlyOccuringCommandCount = commandOcurrenceBin[i];
+					mostFrequentlyOccuringCommandIdx   = i;
+				}
+				//After we are done examining this element, just set it to 0
+				commandOcurrenceBin[i] = 0;
+			}
+			//Choose the command!
+			//Rewrite command to be the mode
+			command = (char)mostFrequentlyOccuringCommandIdx;
+			//Reset  number of elements
+			commandOcurrenceBinNumberOfElements = 0;
+		}
+		else return;
+
 		if(previousCommand != command)
 		{
 			//Parse 'command'
@@ -90,7 +119,7 @@ extern "C"
 				movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
 			}
 			//Set Half Speed
-			else if(command == 'Q')
+			else if(command == 'D')
 			{
 				movementController.SetLowSpeed();
 			}
@@ -99,7 +128,14 @@ extern "C"
 			{
 				movementController.SetHighSpeed();
 			}
+			//Timed rotate command
+			else if(command == 'Q')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
+				doCount = true;
+			}
 		}
+
 		//Update previous command
 		previousCommand = command;
 	}

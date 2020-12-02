@@ -8,7 +8,7 @@ using namespace Timer;
 using namespace USART;
 
 RobotMovementController movementController;
-uint32_t tim3_counter_limit = 48; //50 * 1/100 = 0.5 seconds
+uint32_t tim3_counter_limit = 57; //50 * 1/100 = 0.5 seconds
 //TIM3 wait enable variable
 extern bool doCount;
 

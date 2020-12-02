@@ -3,33 +3,28 @@
 
 #include <stm32f4xx.h>
 #include <stm32f407xx.h>
-
-#define BufferSize 32
-uint8_t USART1_Buffer_Rx[BufferSize];
-uint32_t Rx1_Counter = 0;
-int test = 0;
+#include "Timer.hpp"
 
 using namespace ECE477_17;
 
 extern RobotMovementController movementController;
+extern bool doCount; //TIM3 wait enable - if it is true, we should not update motor movement
 
-extern "C"
+
+int CommandsPreviouslyReceivedAreEqual(uint8_t buffer[], uint32_t size)
 {
-	void receive(uint8_t *buffer, uint32_t *pCounter)
-	{
-		// Check RXNE event
-		if (USART1->SR & USART_SR_RXNE)
-		{
-			test = 1;
-			buffer[*pCounter] = USART1->DR; // Reading DR clears RXNE flag
-			(*pCounter)++; // Dereference and update memory value
-			if ((*pCounter) >= BufferSize) // Check buffer overflow
-			{
-				(*pCounter) = 0; // Circular buffer
-			}
+	//Grab oldest command. Compare to all until the latest
+	uint8_t commandToCompare = buffer[0];
 
-		}
+	for(uint32_t i = 1;i < size;i++)
+	{
+		//Check to see if there are any differences
+		//If there are, return 0
+		if(commandToCompare != buffer[i]) return 1; //CHANGE to 0!
 	}
+
+	//Fall through case is that all commands are equal
+	return 1;
 }
 
 extern "C"
@@ -37,12 +32,47 @@ extern "C"
 	//Note: Double check this function name - looks good
 	void USART1_IRQHandler(void)
 	{
+<<<<<<< HEAD
 		static char prevCommand = 'A';
+=======
+		//Magic Hack. Make the initial previous command something that we don't use. The XBEE will be sending an IDLE command to the
+		//RC car on startup. This will trigger a movment state update and set the robot movement to IDLE
+		static char previousCommand = 'I';
+		//Increment this variable everytime this function is called
+		static uint32_t usartIRQHandlerNumberOfCalls = 0;
+		//Command occurrence bin
+		static uint32_t commandOcurrenceBin[127] = {0};
+		static uint32_t commandOcurrenceBinNumberOfElements = 0;
+		const uint32_t  commandOcurrenceBinMaxNumberOfElementsBeforeReset = 10;
+		const uint32_t usartIRQHandlerCallModuloForAddingCommandToBin = 3;
 
-		receive(USART1_Buffer_Rx, &Rx1_Counter);
+		//Received command
+		char command;
 
-		char command = (char) USART1_Buffer_Rx[Rx1_Counter-1];
+		//Wait for doCount to become false, indicating that we are not currently executing a timed robot movement
+		if(doCount) return;
 
+		//Grab a command
+		if(USART1->SR & USART_SR_RXNE)
+		{
+			command = USART1->DR;
+		}
+		else return;
+>>>>>>> 6d5c4a1f1deecbd4fb3d11a027b25d1d53caacc9
+
+		//Increment number of call counter
+		usartIRQHandlerNumberOfCalls++;
+
+		//Add element to bin every time "usartIRQHandlerNumberOfCalls % usartIRQHanderl....ModuloFroAddingCommandToBin == 0"
+		if(usartIRQHandlerNumberOfCalls % usartIRQHandlerCallModuloForAddingCommandToBin == 0)
+		{
+			//Increment commandOccurenceBinNumberOfElements
+			commandOcurrenceBinNumberOfElements++;
+			//Add to bin
+			commandOcurrenceBin[(uint32_t)command]++;
+		}
+
+<<<<<<< HEAD
 
 		if(command != prevCommand && command == 'A') // Idle
 		{
@@ -51,11 +81,33 @@ extern "C"
 			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 		}
 		else if(command != prevCommand && command == 'B') // Forward (Finger 1)
+=======
+		//Check if maximum number of elements in bin is achieved
+		//We are basically computing the mode
+		if(commandOcurrenceBinNumberOfElements >= commandOcurrenceBinMaxNumberOfElementsBeforeReset)
+>>>>>>> 6d5c4a1f1deecbd4fb3d11a027b25d1d53caacc9
 		{
-			prevCommand = command;
-			movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
+			uint32_t mostFrequentlyOccuringCommandIdx	 = 65;
+			uint32_t mostFrequentlyOccuringCommandCount	 = 0;
+			//Choose the command that occurred most frequently
+			for(int i = 65; i <= 90;i++)
+			{
+				//Update most frequently occurring information
+				if(commandOcurrenceBin[i] > mostFrequentlyOccuringCommandCount)
+				{
+					mostFrequentlyOccuringCommandCount = commandOcurrenceBin[i];
+					mostFrequentlyOccuringCommandIdx   = i;
+				}
+				//After we are done examining this element, just set it to 0
+				commandOcurrenceBin[i] = 0;
+			}
+			//Choose the command!
+			//Rewrite command to be the mode
+			command = (char)mostFrequentlyOccuringCommandIdx;
+			//Reset  number of elements
+			commandOcurrenceBinNumberOfElements = 0;
 		}
+<<<<<<< HEAD
 		else if(command != prevCommand && command == 'C') // Tank-turn left (Finger 2)
 		{
 			prevCommand = command;
@@ -69,6 +121,54 @@ extern "C"
 			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
 		}
 
+=======
+		else return;
+
+		if(previousCommand != command)
+		{
+			//Parse 'command'
+			if(command == 'C')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_FORWARD);
+			}
+			else if(command == 'A')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
+			}
+			else if(command == 'B')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(FULL_REVERSE);
+			}
+			//Rotation commands
+			else if(command == 'I')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
+			}
+			else if(command == 'E')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
+			}
+			//Set Half Speed
+			else if(command == 'D')
+			{
+				movementController.SetLowSpeed();
+			}
+			//Set high speed
+			else if(command == 'G')
+			{
+				movementController.SetHighSpeed();
+			}
+			//Timed rotate command
+			else if(command == 'Q')
+			{
+				movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
+				doCount = true;
+			}
+		}
+
+		//Update previous command
+		previousCommand = command;
+>>>>>>> 6d5c4a1f1deecbd4fb3d11a027b25d1d53caacc9
 	}
 }
 
@@ -80,6 +180,28 @@ namespace ECE477_17
 		//Setup GPIO + Registers for the USART
 		void USART_Init(void)
 		{
+			// GPIO Initialization for USART1 - CHECK IF THIS STILL APPLIES TO STM32F4
+			RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
+
+			RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+
+			// 00 = Input, 01 = Output, 10 = Alternate Function, 11 = Analog
+			GPIOB->MODER &= ~(0xF << (2*6)); // Clear mode bits for pin 6 and 7
+			GPIOB->MODER |= 0xA << (2*6); // Select Alternate Function mode
+
+			// Alternate Function 7 = USART 1
+			GPIOB->AFR[0] |= 0x77 << (4*6); // Set pin 6 and 7 to AF7 - CHECK THIS
+
+			// GPIO Speed: 00 = Low Speed, 01 = Medium Speed, 10 = Fast Speed, 11 = Reserved
+			GPIOB->OSPEEDR |= 0xF << (2*6);
+
+			// GPIO push-pull: 00 = No pull-up/down. 01 = Pull up, 10 = Pull down, 11 = Reserved
+			GPIOB->PUPDR &= ~ (0xF << (2*6));
+			GPIOB->PUPDR |= 0x5 << (2*6); // Select pull-up
+
+			// GPIO Output Type: 0 = push-pull, 1 = open drain
+			GPIOB->OTYPER &= ~(0x3<<6);
+
 			// Disable USART
 			USART1->CR1 &= ~USART_CR1_UE;
 

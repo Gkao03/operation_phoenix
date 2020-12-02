@@ -32,9 +32,6 @@ extern "C"
 	//Note: Double check this function name - looks good
 	void USART1_IRQHandler(void)
 	{
-<<<<<<< HEAD
-		static char prevCommand = 'A';
-=======
 		//Magic Hack. Make the initial previous command something that we don't use. The XBEE will be sending an IDLE command to the
 		//RC car on startup. This will trigger a movment state update and set the robot movement to IDLE
 		static char previousCommand = 'I';
@@ -58,7 +55,6 @@ extern "C"
 			command = USART1->DR;
 		}
 		else return;
->>>>>>> 6d5c4a1f1deecbd4fb3d11a027b25d1d53caacc9
 
 		//Increment number of call counter
 		usartIRQHandlerNumberOfCalls++;
@@ -72,20 +68,9 @@ extern "C"
 			commandOcurrenceBin[(uint32_t)command]++;
 		}
 
-<<<<<<< HEAD
-
-		if(command != prevCommand && command == 'A') // Idle
-		{
-			prevCommand = command;
-			movementController.SetCurrentMovementStateAndUpdateMotorDirection(IDLE);
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-		}
-		else if(command != prevCommand && command == 'B') // Forward (Finger 1)
-=======
 		//Check if maximum number of elements in bin is achieved
 		//We are basically computing the mode
 		if(commandOcurrenceBinNumberOfElements >= commandOcurrenceBinMaxNumberOfElementsBeforeReset)
->>>>>>> 6d5c4a1f1deecbd4fb3d11a027b25d1d53caacc9
 		{
 			uint32_t mostFrequentlyOccuringCommandIdx	 = 65;
 			uint32_t mostFrequentlyOccuringCommandCount	 = 0;
@@ -107,21 +92,6 @@ extern "C"
 			//Reset  number of elements
 			commandOcurrenceBinNumberOfElements = 0;
 		}
-<<<<<<< HEAD
-		else if(command != prevCommand && command == 'C') // Tank-turn left (Finger 2)
-		{
-			prevCommand = command;
-			movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_LEFT);
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-		}
-		else if(command != prevCommand && command == 'E')  // Tank-turn right (Finger 3)
-		{
-			prevCommand = command;
-			movementController.SetCurrentMovementStateAndUpdateMotorDirection(TANK_ROTATE_RIGHT);
-			movementController.ShiftRegisterAssignMotorEnableDirectionValues_TIM3_InterruptCallback();
-		}
-
-=======
 		else return;
 
 		if(previousCommand != command)
@@ -168,7 +138,6 @@ extern "C"
 
 		//Update previous command
 		previousCommand = command;
->>>>>>> 6d5c4a1f1deecbd4fb3d11a027b25d1d53caacc9
 	}
 }
 

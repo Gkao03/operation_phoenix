@@ -61,8 +61,8 @@ ECE477_SeniorDesign_RC_Car.bin \
 all: ECE477_SeniorDesign_RC_Car.elf secondary-outputs
 
 # Tool invocations
-ECE477_SeniorDesign_RC_Car.elf: $(OBJS) $(USER_OBJS) C:\Users\Nick\OneDrive\Documents\SeniorDesignCode\car_root\STM32F407VGTX_FLASH.ld
-	arm-none-eabi-g++ -o "ECE477_SeniorDesign_RC_Car.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Nick\OneDrive\Documents\SeniorDesignCode\car_root\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ECE477_SeniorDesign_RC_Car.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+ECE477_SeniorDesign_RC_Car.elf: $(OBJS) $(USER_OBJS) /Users/praneethmedepalli/Desktop/Fall\ Semester\ 2020/Senior\ Design/codes/operation_phoenix/car_root/STM32F407VGTX_FLASH.ld
+	arm-none-eabi-g++ -o "ECE477_SeniorDesign_RC_Car.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/praneethmedepalli/Desktop/Fall Semester 2020/Senior Design/codes/operation_phoenix/car_root/STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ECE477_SeniorDesign_RC_Car.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

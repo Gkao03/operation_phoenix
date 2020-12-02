@@ -215,7 +215,9 @@ void DMA1_Channel1_IRQHandler(void)
   /* USER CODE END DMA1_Channel1_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_adc1);
   /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
-	if (values[0] > 2600) {
+
+    //Pinky Finger
+	if (values[0] > 2650) {
 		fingers[0] = 1;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
 
@@ -224,7 +226,8 @@ void DMA1_Channel1_IRQHandler(void)
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
 	}
 
-	if (values[1] > 2600) {
+	//Ring Finger
+	if (values[1] > 2425) {
 		fingers[1] = 1;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
 	} else {
@@ -232,7 +235,8 @@ void DMA1_Channel1_IRQHandler(void)
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 	}
 
-	if (values[2] > 2600) {
+	//Middle finger
+	if (values[2] > 2500) {
 		fingers[2] = 1;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
 	} else {
@@ -240,7 +244,8 @@ void DMA1_Channel1_IRQHandler(void)
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
 	}
 
-	if (values[3] > 2600) {
+	//Index finger
+	if (values[3] > 2475) {
 		fingers[3] = 1;
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);
 	} else {
@@ -248,7 +253,8 @@ void DMA1_Channel1_IRQHandler(void)
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);
 	}
 
-	if (values[4] > 2600) {
+	//Thumb finger
+	if (values[4] > 2450) {
 		fingers[4] = 1;
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 	} else {
@@ -260,7 +266,7 @@ void DMA1_Channel1_IRQHandler(void)
 	transmit[0] = 65;
 	for (int j = 0; j < 5; j++)
 	{
-		transmit[0] += fingers[j] << j;
+		transmit[0] += fingers[j] << (4-j);
 	}
 	//HAL_UART_Transmit(&huart3, transmit, 1,1000);
 	HAL_UART_Transmit(&huart2, transmit, 1,1000);
